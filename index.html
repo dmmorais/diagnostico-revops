@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Diagnóstico Estratégico · RevOps/S&OP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0D1B4B;
+    --cyan: #29B6E8;
+    --cyan-light: #E6F4FC;
+    --gray: #A8AAAF;
+    --gray-light: #F4F4F6;
+    --white: #FFFFFF;
+    --text: #1a1a2e;
+    --text-muted: #6b6b7a;
+    --border: rgba(0,0,0,0.08);
+    --green: #0F6E56;
+    --green-light: #E1F5EE;
+    --amber: #854F0B;
+    --amber-light: #FAEEDA;
+    --blue: #185FA5;
+    --blue-light: #E6F1FB;
+    --red: #A32D2D;
+    --red-light: #FCEBEB;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--gray-light);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  .screen {
+    display: none;
+    min-height: 100vh;
+    flex-direction: column;
+  }
+  .screen.active { display: flex; }
+
+  /* ── TELA DE ABERTURA ── */
+  #intro {
+    background: var(--navy);
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+  }
+
+  .intro-eyebrow {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 1.5rem;
+  }
+
+  .intro-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(26px, 7vw, 36px);
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.15;
+    margin-bottom: 1rem;
+  }
+
+  .intro-title span { color: var(--cyan); }
+
+  .intro-sub {
+    font-size: 14px;
+    color: rgba(255,255,255,0.65);
+    line-height: 1.7;
+    max-width: 340px;
+    margin: 0 auto 2rem;
+  }
+
+  .intro-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .chip {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(41,182,232,0.3);
+    color: rgba(255,255,255,0.7);
+  }
+
+  .btn-start {
+    display: inline-block;
+    padding: 14px 36px;
+    background: var(--cyan);
+    color: var(--navy);
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    border: none;
+    border-radius: 100px;
+    cursor: pointer;
+    letter-spacing: .02em;
+    transition: transform .15s, opacity .15s;
+    width: 100%;
+    max-width: 320px;
+  }
+  .btn-start:active { transform: scale(0.97); opacity: .9; }
+
+  .intro-credit {
+    margin-top: 2rem;
+    font-size: 11px;
+    color: rgba(255,255,255,0.3);
+    line-height: 1.6;
+  }
+
+  /* ── TELA DE PERGUNTA ── */
+  #quiz {
+    flex-direction: column;
+    background: var(--white);
+  }
+
+  .quiz-top {
+    background: var(--navy);
+    padding: 1.25rem 1.25rem 1rem;
+    flex-shrink: 0;
+  }
+
+  .quiz-progress-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: .6rem;
+  }
+
+  .q-disc-name {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--cyan);
+  }
+
+  .q-counter {
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+  }
+
+  .progress-bar {
+    height: 3px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--cyan);
+    border-radius: 2px;
+    transition: width .4s ease;
+  }
+
+  .quiz-body {
+    flex: 1;
+    padding: 1.5rem 1.25rem 1rem;
+    overflow-y: auto;
+  }
+
+  .q-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.35;
+    margin-bottom: .5rem;
+  }
+
+  .q-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-style: italic;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 10px; }
+
+  .opt {
+    padding: 14px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    font-size: 14px;
+    color: var(--text-muted);
+    cursor: pointer;
+    background: var(--white);
+    text-align: left;
+    line-height: 1.5;
+    transition: all .15s;
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+    position: relative;
+  }
+
+  .opt:active { transform: scale(0.98); }
+
+  .opt.sel {
+    background: var(--cyan-light);
+    border-color: var(--cyan);
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  .opt-num {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--gray-light);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-align: center;
+    line-height: 22px;
+    margin-right: 8px;
+    flex-shrink: 0;
+    transition: all .15s;
+  }
+
+  .opt.sel .opt-num {
+    background: var(--cyan);
+    color: var(--navy);
+  }
+
+  .quiz-footer {
+    padding: 1rem 1.25rem 1.5rem;
+    background: var(--white);
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .nav-row { display: flex; gap: 10px; }
+
+  .btn-back {
+    padding: 13px 20px;
+    border: 1.5px solid var(--border);
+    border-radius: 100px;
+    font-size: 14px;
+    color: var(--text-muted);
+    cursor: pointer;
+    background: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    transition: all .15s;
+  }
+  .btn-back:active { opacity: .7; }
+
+  .btn-next {
+    flex: 1;
+    padding: 13px;
+    border: none;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'Syne', sans-serif;
+    opacity: .3;
+    transition: opacity .2s;
+    letter-spacing: .02em;
+  }
+  .btn-next.ready { opacity: 1; }
+  .btn-next.ready:active { transform: scale(0.98); }
+
+  /* ── RESULTADO ── */
+  #result {
+    flex-direction: column;
+    background: var(--gray-light);
+  }
+
+  .result-header {
+    background: var(--navy);
+    padding: 1.5rem 1.25rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .result-header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 24px;
+    background: var(--gray-light);
+    border-radius: 24px 24px 0 0;
+  }
+
+  .result-eyebrow {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: .5rem;
+  }
+
+  .result-perfil-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: .75rem;
+  }
+
+  .result-nome {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.2;
+    margin-bottom: .75rem;
+  }
+
+  .result-desc {
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.7;
+  }
+
+  .result-body {
+    padding: 1.5rem 1.25rem 2rem;
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .result-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .card-title {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+  }
+
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .bar-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    width: 100px;
+    flex-shrink: 0;
+    line-height: 1.3;
+  }
+
+  .bar-bg {
+    flex: 1;
+    height: 8px;
+    border-radius: 4px;
+    background: var(--gray-light);
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width .8s cubic-bezier(.4,0,.2,1);
+  }
+
+  .bar-score {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    width: 28px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .dev-item {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .dev-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+  .dev-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: var(--white);
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+    font-family: 'Syne', sans-serif;
+  }
+
+  .dev-text {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  .btn-restart {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 100px;
+    font-size: 14px;
+    color: var(--text-muted);
+    cursor: pointer;
+    background: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    text-align: center;
+    margin-top: .5rem;
+    transition: all .15s;
+  }
+  .btn-restart:active { opacity: .7; }
+
+  .datawise-badge {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 11px;
+    color: var(--text-muted);
+    opacity: .6;
+  }
+</style>
+</head>
+<body>
+
+<!-- TELA 1 — INTRO -->
+<div class="screen active" id="intro">
+  <div class="intro-eyebrow">MBA · Inteligência de Mercado · Datawise</div>
+  <div class="intro-title">Qual é o seu<br>perfil <span>estratégico</span>?</div>
+  <p class="intro-sub">6 perguntas baseadas nas disciplinas do pensamento estratégico de Michael D. Watkins — aplicadas ao contexto de RevOps e S&OP.</p>
+  <div class="intro-chips">
+    <span class="chip">6 perguntas</span>
+    <span class="chip">5 minutos</span>
+    <span class="chip">Diagnóstico imediato</span>
+  </div>
+  <button class="btn-start" onclick="startQuiz()">Começar diagnóstico</button>
+  <div class="intro-credit">Baseado em: The Six Disciplines of Strategic Thinking<br>Michael D. Watkins · IMD Business School</div>
+</div>
+
+<!-- TELA 2 — QUIZ -->
+<div class="screen" id="quiz">
+  <div class="quiz-top">
+    <div class="quiz-progress-label">
+      <span class="q-disc-name" id="disc-name"></span>
+      <span class="q-counter" id="q-counter"></span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="prog-fill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="quiz-body">
+    <div class="q-text" id="q-text"></div>
+    <div class="q-sub" id="q-sub"></div>
+    <div class="options" id="options"></div>
+  </div>
+
+  <div class="quiz-footer">
+    <div class="nav-row">
+      <button class="btn-back" id="btn-back" onclick="goBack()">← Voltar</button>
+      <button class="btn-next" id="btn-next" onclick="goNext()">Próxima</button>
+    </div>
+  </div>
+</div>
+
+<!-- TELA 3 — RESULTADO -->
+<div class="screen" id="result">
+  <div class="result-header">
+    <div class="result-eyebrow">Seu diagnóstico</div>
+    <div class="result-perfil-tag" id="res-tag"></div>
+    <div class="result-nome" id="res-nome"></div>
+    <div class="result-desc" id="res-desc"></div>
+  </div>
+  <div class="result-body">
+    <div class="result-card">
+      <div class="card-title">Suas 6 disciplinas</div>
+      <div id="res-bars"></div>
+    </div>
+    <div class="result-card">
+      <div class="card-title">O que este MBA vai desenvolver em você</div>
+      <div id="res-dev"></div>
+    </div>
+    <button class="btn-restart" onclick="restart()">Refazer o diagnóstico</button>
+    <div class="datawise-badge">Datawise · Inteligência de Dados · MBA RevOps/S&OP</div>
+  </div>
+</div>
+
+<script>
+const perguntas = [
+  {
+    disc: 'Reconhecimento de padrões',
+    q: 'Quando os dados mudam inesperadamente, o que você normalmente faz?',
+    sub: 'Escolha a opção que mais se aproxima do que você faz de verdade — não do que gostaria de fazer.',
+    opts: [
+      'Espero alguém explicar o que aconteceu antes de agir',
+      'Noto que algo mudou, mas levo um tempo para entender o padrão',
+      'Consigo identificar a tendência com algum esforço de análise',
+      'Percebo padrões rapidamente e já consigo antecipar o que pode vir a seguir'
+    ]
+  },
+  {
+    disc: 'Visão sistêmica',
+    q: 'Quando um problema aparece em vendas, como você costuma olhar para ele?',
+    sub: 'Pense numa situação real recente na sua empresa.',
+    opts: [
+      'Foco no problema onde ele apareceu — resolvo o que está na minha área',
+      'Percebo que pode ter causas em outras áreas, mas não sei exatamente onde',
+      'Consigo mapear as causas em outras etapas quando analiso com calma',
+      'Enxergo o problema como parte de um sistema — mapeio causas e efeitos em outras áreas automaticamente'
+    ]
+  },
+  {
+    disc: 'Agilidade mental',
+    q: 'Você consegue transitar entre o operacional e o estratégico numa mesma semana sem perder o fio?',
+    sub: 'Ex: manhã ajustando SLA com o time, tarde apresentando resultados para a diretoria.',
+    opts: [
+      'Fico desconfortável quando preciso mudar de nível — prefiro um ou outro',
+      'Consigo, mas às vezes perco a perspectiva estratégica quando entro no operacional',
+      'Faço essa transição com certa facilidade na maioria das vezes',
+      'Mudo de nível naturalmente e sei adaptar a linguagem para cada contexto'
+    ]
+  },
+  {
+    disc: 'Resolução estruturada de problemas',
+    q: 'Quando você precisa apresentar um problema para a liderança, como costuma estruturar?',
+    sub: 'Seja honesto — o que acontece de verdade, não o ideal.',
+    opts: [
+      'Apresento o problema como ele aparece, sem uma estrutura muito definida',
+      'Tenho algumas hipóteses, mas nem sempre tenho dados para sustentá-las',
+      'Consigo estruturar hipóteses e busco dados antes de apresentar',
+      'Chego com hipóteses testadas, dados e a recomendação — não só o problema'
+    ]
+  },
+  {
+    disc: 'Visioning',
+    q: 'Quando você precisa convencer outra área a mudar um processo, como costuma fazer?',
+    sub: 'Pense numa situação em que você tinha razão mas precisava de alinhamento.',
+    opts: [
+      'Apresento os dados e espero que a lógica convença por si mesma',
+      'Explico o problema, mas nem sempre consigo mostrar o que muda para a outra área',
+      'Consigo conectar a mudança com o benefício da outra área quando me preparo bem',
+      'Naturalmente falo a língua do outro — apresento como a mudança serve ao interesse de cada um'
+    ]
+  },
+  {
+    disc: 'Inteligência política',
+    q: 'Em processos que dependem de outras áreas — sem você ser o chefe delas — como você avança?',
+    sub: 'RevOps opera sem autoridade formal. Essa é a disciplina mais crítica do profissional de receita.',
+    opts: [
+      'Fico travado quando não tenho autoridade — dependo que alguém de cima resolva',
+      'Consigo avançar em alguns casos, mas me perco nas resistências organizacionais',
+      'Identifico quem são os aliados e os resistentes e ajusto minha abordagem',
+      'Navego as dinâmicas organizacionais com facilidade — sei construir aliados e contornar resistências'
+    ]
+  }
+];
+
+const barColors = ['#185FA5','#0F6E56','#854F0B','#993C1D','#534AB7','#A32D2D'];
+const scores = new Array(6).fill(0);
+let current = 0;
+
+function startQuiz() {
+  current = 0;
+  scores.fill(0);
+  showScreen('quiz');
+  renderQ();
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function renderQ() {
+  const p = perguntas[current];
+  document.getElementById('disc-name').textContent = p.disc;
+  document.getElementById('q-counter').textContent = (current+1) + ' de 6';
+  document.getElementById('prog-fill').style.width = ((current)/6*100) + '%';
+  document.getElementById('q-text').textContent = p.q;
+  document.getElementById('q-sub').textContent = p.sub;
+
+  const optsEl = document.getElementById('options');
+  optsEl.innerHTML = '';
+  p.opts.forEach((o, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt' + (scores[current] === i+1 ? ' sel' : '');
+    btn.innerHTML = `<span class="opt-num">${i+1}</span>${o}`;
+    btn.onclick = () => selectOpt(i+1);
+    optsEl.appendChild(btn);
+  });
+
+  const back = document.getElementById('btn-back');
+  const next = document.getElementById('btn-next');
+  back.style.display = current === 0 ? 'none' : 'block';
+  next.textContent = current === 5 ? 'Ver meu diagnóstico' : 'Próxima';
+  next.className = 'btn-next' + (scores[current] > 0 ? ' ready' : '');
+}
+
+function selectOpt(val) {
+  scores[current] = val;
+  document.querySelectorAll('.opt').forEach((o, i) => {
+    o.classList.toggle('sel', i+1 === val);
+  });
+  document.getElementById('btn-next').classList.add('ready');
+}
+
+function goNext() {
+  if (!scores[current]) return;
+  if (current < 5) {
+    current++;
+    renderQ();
+  } else {
+    showResult();
+  }
+}
+
+function goBack() {
+  if (current > 0) { current--; renderQ(); }
+}
+
+function showResult() {
+  const avg = scores.reduce((a,b) => a+b, 0) / 6;
+
+  let nome, desc, tagTxt, tagBg, tagColor, devItems;
+
+  if (avg >= 3.5) {
+    nome = 'Líder estratégico emergente';
+    tagTxt = 'Perfil avançado';
+    tagBg = '#E1F5EE'; tagColor = '#0F6E56';
+    desc = 'Você já opera com visão sistêmica e consegue transitar entre o estratégico e o operacional. O desafio agora é consistência e escala — levar essas capacidades para processos cada vez mais complexos e influenciar times maiores.';
+    devItems = [
+      'Aprofundar o diagnóstico de funil com dados reais da sua operação',
+      'Construir autoridade de influência em times que não são os seus',
+      'Desenvolver a capacidade de antecipar cenários antes que se tornem problemas'
+    ];
+  } else if (avg >= 2.5) {
+    nome = 'Executor em transição estratégica';
+    tagTxt = 'Perfil intermediário';
+    tagBg = '#FAEEDA'; tagColor = '#854F0B';
+    desc = 'Você entrega bem e já tem alguns instintos estratégicos — mas ainda oscila entre o modo operacional e o estratégico. O gap está em estruturar melhor o raciocínio e usar isso para ganhar influência e visibilidade.';
+    devItems = [
+      'Desenvolver a disciplina de apresentar problemas com hipóteses testadas',
+      'Praticar a leitura de sistemas — enxergar causas antes de ver sintomas',
+      'Construir aliados intencionalmente, não apenas quando há crise'
+    ];
+  } else if (avg >= 1.8) {
+    nome = 'Analista de alto potencial';
+    tagTxt = 'Perfil em desenvolvimento';
+    tagBg = '#E6F1FB'; tagColor = '#185FA5';
+    desc = 'Sua base técnica existe, mas o pensamento estratégico ainda está em construção. Isso é normal — e este MBA existe exatamente para esse momento. Você tem consciência do gap, e consciência é o primeiro passo da mudança.';
+    devItems = [
+      'Começar a enxergar padrões antes de ser perguntado sobre eles',
+      'Aprender a mapear o sistema antes de propor soluções',
+      'Desenvolver a coragem de influenciar sem autoridade formal'
+    ];
+  } else {
+    nome = 'Especialista operacional com novo horizonte';
+    tagTxt = 'Perfil operacional';
+    tagBg = '#FCEBEB'; tagColor = '#A32D2D';
+    desc = 'Você domina bem sua função — e agora está dando um passo importante: reconhecer que existe um nível acima do operacional. Este MBA vai abrir esse horizonte. O mais difícil já foi: admitir que há mais a desenvolver.';
+    devItems = [
+      'Entender como sua área impacta o sistema de receita inteiro',
+      'Aprender a falar a língua da estratégia — não só da execução',
+      'Começar a construir alianças além da sua área de conforto'
+    ];
+  }
+
+  const tagEl = document.getElementById('res-tag');
+  tagEl.textContent = tagTxt;
+  tagEl.style.cssText = `background:${tagBg};color:${tagColor};font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;margin-bottom:.75rem;display:inline-block`;
+
+  document.getElementById('res-nome').textContent = nome;
+  document.getElementById('res-desc').textContent = desc;
+
+  const labelsShort = ['Padrões','Sistêmica','Agilidade','Resolução','Visioning','Pol. política'];
+  document.getElementById('res-bars').innerHTML = labelsShort.map((l,i) => `
+    <div class="bar-row">
+      <div class="bar-label">${l}</div>
+      <div class="bar-bg"><div class="bar-fill" style="width:0%;background:${barColors[i]}" data-w="${scores[i]/4*100}"></div></div>
+      <div class="bar-score">${scores[i]}/4</div>
+    </div>`).join('');
+
+  document.getElementById('res-dev').innerHTML = devItems.map((d,i) => `
+    <div class="dev-item">
+      <div class="dev-num">${i+1}</div>
+      <div class="dev-text">${d}</div>
+    </div>`).join('');
+
+  showScreen('result');
+
+  setTimeout(() => {
+    document.querySelectorAll('.bar-fill').forEach(bar => {
+      bar.style.width = bar.dataset.w + '%';
+    });
+  }, 100);
+}
+
+function restart() {
+  scores.fill(0);
+  current = 0;
+  showScreen('intro');
+}
+</script>
+</body>
+</html>
