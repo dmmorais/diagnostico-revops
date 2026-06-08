@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Ponte entre Estratégia e Operação · Datawise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:      #0D1B4B;
+  --navy-mid:  #1A2E6B;
+  --cyan:      #29B6E8;
+  --cyan-pale: #E8F6FD;
+  --gray:      #A8AAAF;
+  --gray-pale: #F5F5F7;
+  --white:     #FFFFFF;
+  --text:      #111827;
+  --text-mid:  #4B5563;
+  --text-soft: #9CA3AF;
+  --ok:        #059669;
+  --ok-pale:   #D1FAE5;
+  --warn:      #D97706;
+  --warn-pale: #FEF3C7;
+  --danger:    #DC2626;
+  --danger-pale:#FEE2E2;
+  --border:    #E5E7EB;
+  --radius:    12px;
+  --shadow:    0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.04);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--gray-pale);
+  color: var(--text);
+  min-height: 100vh;
+  padding-bottom: 4rem;
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  background: var(--navy);
+  padding: 0 2rem;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.topbar-brand {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: .04em;
+}
+.topbar-brand span { color: var(--cyan); }
+.topbar-meta {
+  font-size: 11px;
+  color: rgba(255,255,255,.45);
+  letter-spacing: .04em;
+}
+.progress-wrap {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: rgba(255,255,255,.1);
+}
+.progress-fill {
+  height: 100%;
+  background: var(--cyan);
+  transition: width .4s ease;
+  border-radius: 0 2px 2px 0;
+}
+
+/* ── LAYOUT ── */
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+}
+
+/* ── INTRO CARD ── */
+.intro-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow);
+}
+.intro-stripe {
+  background: var(--navy);
+  padding: 2rem 2rem 1.75rem;
+  position: relative;
+  overflow: hidden;
+}
+.intro-stripe::after {
+  content: '';
+  position: absolute;
+  right: -40px; top: -40px;
+  width: 200px; height: 200px;
+  border: 1px solid rgba(41,182,232,.15);
+  border-radius: 50%;
+}
+.intro-stripe::before {
+  content: '';
+  position: absolute;
+  right: 20px; bottom: -60px;
+  width: 140px; height: 140px;
+  border: 1px solid rgba(41,182,232,.1);
+  border-radius: 50%;
+}
+.intro-tag {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin-bottom: .75rem;
+}
+.intro-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(22px, 3.5vw, 30px);
+  font-weight: 800;
+  color: var(--white);
+  line-height: 1.2;
+  margin-bottom: .75rem;
+  position: relative;
+}
+.intro-sub {
+  font-size: 14px;
+  color: rgba(255,255,255,.65);
+  line-height: 1.7;
+  max-width: 560px;
+  position: relative;
+}
+.intro-body {
+  padding: 1.5rem 2rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+.intro-stat {
+  text-align: center;
+}
+.intro-stat-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 2px;
+}
+.intro-stat-lbl {
+  font-size: 11px;
+  color: var(--text-soft);
+  line-height: 1.4;
+}
+
+/* ── SECTION ── */
+.section {
+  margin-bottom: 1.5rem;
+}
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+.section-num {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: var(--white);
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.section-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--navy);
+}
+.section-sub {
+  font-size: 12px;
+  color: var(--text-soft);
+  margin-top: 2px;
+}
+
+/* ── CARD ── */
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.card-head {
+  padding: .85rem 1.25rem;
+  background: var(--gray-pale);
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+.card-body { padding: 1.25rem; }
+
+/* ── FORM FIELDS ── */
+.field { margin-bottom: 1rem; }
+.field:last-child { margin-bottom: 0; }
+.field-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: .4rem;
+  display: block;
+}
+.field-hint {
+  font-size: 11px;
+  color: var(--text-soft);
+  margin-bottom: .5rem;
+  font-style: italic;
+  line-height: 1.5;
+}
+input[type="text"],
+textarea {
+  width: 100%;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: .65rem .9rem;
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+  background: var(--white);
+  transition: border-color .15s;
+  resize: none;
+  line-height: 1.6;
+}
+input[type="text"]:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--cyan);
+}
+input[type="text"]::placeholder,
+textarea::placeholder { color: var(--text-soft); }
+
+/* ── GRID 2 COL ── */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+@media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
+
+/* ── MECANISMO ROWS ── */
+.mec-table { width: 100%; border-collapse: collapse; }
+.mec-table th {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+  text-align: left;
+  padding: .5rem .75rem;
+  background: var(--gray-pale);
+  border-bottom: 1px solid var(--border);
+}
+.mec-table th:not(:first-child) { text-align: center; }
+.mec-table td {
+  padding: .75rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.mec-table tr:last-child td { border-bottom: none; }
+.mec-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+.mec-desc {
+  font-size: 11px;
+  color: var(--text-soft);
+  line-height: 1.5;
+}
+.radio-group {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+}
+.radio-opt {
+  display: none;
+}
+.radio-lbl {
+  width: 36px; height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--border);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-soft);
+  transition: all .15s;
+  position: relative;
+}
+.radio-lbl:first-of-type { border-radius: 8px 0 0 8px; }
+.radio-lbl:last-of-type  { border-radius: 0 8px 8px 0; }
+.radio-lbl + .radio-lbl  { margin-left: -1.5px; }
+.radio-opt:checked + .radio-lbl {
+  z-index: 1;
+  border-color: transparent;
+  color: var(--white);
+  font-weight: 600;
+}
+.radio-opt.ok:checked + .radio-lbl   { background: var(--ok); border-color: var(--ok); }
+.radio-opt.warn:checked + .radio-lbl { background: var(--warn); border-color: var(--warn); }
+.radio-opt.bad:checked + .radio-lbl  { background: var(--danger); border-color: var(--danger); }
+
+/* ── LEGEND ── */
+.legend {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-mid);
+}
+.legend-dot {
+  width: 10px; height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+/* ── GAP SECTION ── */
+.gap-card {
+  background: var(--navy);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.gap-card-head {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.gap-card-tag {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin-bottom: .4rem;
+}
+.gap-card-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--white);
+}
+.gap-card-body { padding: 1.25rem 1.5rem; }
+.gap-card-body textarea {
+  background: rgba(255,255,255,.06);
+  border-color: rgba(255,255,255,.12);
+  color: var(--white);
+}
+.gap-card-body textarea:focus { border-color: var(--cyan); }
+.gap-card-body textarea::placeholder { color: rgba(255,255,255,.3); }
+.gap-card-body .field-label { color: rgba(255,255,255,.85); }
+.gap-card-body .field-hint  { color: rgba(255,255,255,.4); }
+.gap-questions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+@media (max-width: 600px) { .gap-questions { grid-template-columns: 1fr; } }
+
+/* ── SAVE BUTTON ── */
+.save-wrap {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .75rem;
+}
+.btn-save {
+  padding: 14px 48px;
+  background: var(--navy);
+  color: var(--white);
+  border: none;
+  border-radius: 100px;
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: .03em;
+  transition: background .15s, transform .1s;
+}
+.btn-save:hover { background: var(--navy-mid); }
+.btn-save:active { transform: scale(.97); }
+.btn-print {
+  padding: 10px 32px;
+  background: transparent;
+  color: var(--text-soft);
+  border: 1.5px solid var(--border);
+  border-radius: 100px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.btn-print:hover { border-color: var(--navy); color: var(--navy); }
+.save-note {
+  font-size: 11px;
+  color: var(--text-soft);
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  bottom: 2rem; left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--navy);
+  color: var(--white);
+  font-size: 13px;
+  font-weight: 500;
+  padding: .75rem 1.5rem;
+  border-radius: 100px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.2);
+  transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+  z-index: 999;
+  white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ── DIVIDER ── */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 1.5rem 0;
+}
+
+@media print {
+  .topbar, .btn-save, .btn-print, .save-wrap, .toast { display: none !important; }
+  body { background: white; }
+  .card { box-shadow: none; border: 1px solid #ddd; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-brand">DATA<span>WISE</span> · Ferramenta de Análise</div>
+  <div class="topbar-meta">RevOps & S&OP · MBA Inteligência de Mercado</div>
+  <div class="progress-wrap">
+    <div class="progress-fill" id="prog" style="width:0%"></div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- INTRO -->
+  <div class="intro-card">
+    <div class="intro-stripe">
+      <div class="intro-tag">Ferramenta de Análise · Dia 1</div>
+      <h1 class="intro-title">A Ponte entre Estratégia<br>e Operação</h1>
+      <p class="intro-sub">RevOps e S&OP não criam a estratégia — elas são a ponte entre o que foi decidido na sala de diretoria e o que acontece na operação. Use esta ferramenta para analisar como essa ponte funciona (ou não) na sua empresa.</p>
+    </div>
+    <div class="intro-body">
+      <div class="intro-stat">
+        <div class="intro-stat-num">3</div>
+        <div class="intro-stat-lbl">blocos de análise</div>
+      </div>
+      <div class="intro-stat">
+        <div class="intro-stat-num">~15 min</div>
+        <div class="intro-stat-lbl">para preencher em aula</div>
+      </div>
+      <div class="intro-stat">
+        <div class="intro-stat-num">∞</div>
+        <div class="intro-stat-lbl">para usar na empresa</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOCO 1 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <div>
+        <div class="section-title">O que vem do Planejamento Estratégico</div>
+        <div class="section-sub">Preencha o que você conhece da estratégia da sua empresa. Se não souber, isso já é um dado.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">Inputs estratégicos — o que RevOps e S&OP precisam receber para funcionar</div>
+      <div class="card-body">
+        <div class="grid-2">
+          <div class="field">
+            <label class="field-label">Para onde a empresa quer crescer?</label>
+            <span class="field-hint">Mercados, segmentos, regiões ou produtos prioritários nos próximos 12–24 meses</span>
+            <textarea rows="3" placeholder="Ex: expandir para o mercado enterprise, dobrar a base no Sul do Brasil, lançar novo produto para PMEs..." oninput="updateProgress()"></textarea>
+          </div>
+          <div class="field">
+            <label class="field-label">Qual é o cliente ideal (ICP)?</label>
+            <span class="field-hint">Perfil de empresa ou pessoa que a estratégia definiu como alvo prioritário</span>
+            <textarea rows="3" placeholder="Ex: empresas B2B com 50–500 funcionários, setor industrial, com processo de compra centralizado..." oninput="updateProgress()"></textarea>
+          </div>
+          <div class="field">
+            <label class="field-label">Qual é a meta de receita?</label>
+            <span class="field-hint">Crescimento esperado, ticket médio alvo ou volume de novos clientes</span>
+            <textarea rows="3" placeholder="Ex: crescer 40% em receita recorrente, atingir R$ 10M ARR, fechar 120 novos clientes..." oninput="updateProgress()"></textarea>
+          </div>
+          <div class="field">
+            <label class="field-label">Como a empresa compete?</label>
+            <span class="field-hint">Posicionamento e proposta de valor — o que diferencia no mercado</span>
+            <textarea rows="3" placeholder="Ex: entrega mais rápida, especialização setorial, melhor custo-benefício, suporte diferenciado..." oninput="updateProgress()"></textarea>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="field">
+          <label class="field-label">🚩 Sinal de alerta: o que você NÃO soube responder acima?</label>
+          <span class="field-hint">Se algum dos campos ficou em branco, isso indica que a estratégia não chegou até você — ou não existe de forma clara. Anote aqui o que ficou sem resposta.</span>
+          <textarea rows="2" placeholder="Ex: não sei qual é o ICP definido pela diretoria, não conheço a meta de receita do ano..." oninput="updateProgress()"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOCO 2 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <div>
+        <div class="section-title">Como a ponte é feita hoje</div>
+        <div class="section-sub">Para cada mecanismo, avalie o status atual na sua empresa.</div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--ok)"></div>Existe e funciona bem</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--warn)"></div>Existe, mas é informal ou inconsistente</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--danger)"></div>Não existe hoje</div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">RevOps — mecanismos de operacionalização da estratégia</div>
+      <div class="card-body" style="padding:0">
+        <table class="mec-table">
+          <thead>
+            <tr>
+              <th style="width:55%">Mecanismo</th>
+              <th>✓ Funciona</th>
+              <th>⚡ Informal</th>
+              <th>✗ Ausente</th>
+              <th style="width:20%">Observação</th>
+            </tr>
+          </thead>
+          <tbody id="revops-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:1rem">
+      <div class="card-head">S&OP — mecanismos de alinhamento entre demanda e operação</div>
+      <div class="card-body" style="padding:0">
+        <table class="mec-table">
+          <thead>
+            <tr>
+              <th style="width:55%">Mecanismo</th>
+              <th>✓ Funciona</th>
+              <th>⚡ Informal</th>
+              <th>✗ Ausente</th>
+              <th style="width:20%">Observação</th>
+            </tr>
+          </thead>
+          <tbody id="sop-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOCO 3 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <div>
+        <div class="section-title">O maior gap — e o que fazer com ele</div>
+        <div class="section-sub">Com base no que você preencheu acima, responda as perguntas finais.</div>
+      </div>
+    </div>
+
+    <div class="gap-card">
+      <div class="gap-card-head">
+        <div class="gap-card-tag">Análise crítica</div>
+        <div class="gap-card-title">Onde a ponte está mais fraca?</div>
+      </div>
+      <div class="gap-card-body">
+        <div class="gap-questions">
+          <div class="field">
+            <label class="field-label">Qual é o mecanismo mais ausente na sua empresa?</label>
+            <span class="field-hint">Escolha um — o mais crítico, não todos.</span>
+            <textarea rows="3" placeholder="Ex: não temos cadência de revisão de forecast — cada área faz o seu sem integrar com as outras..." oninput="updateProgress()"></textarea>
+          </div>
+          <div class="field">
+            <label class="field-label">Qual é o impacto disso na receita hoje?</label>
+            <span class="field-hint">Estimativa — pode ser em % ou em situação concreta.</span>
+            <textarea rows="3" placeholder="Ex: perdemos oportunidades porque vendas não sabe o que marketing está gerando, ou prometemos prazos que operações não consegue cumprir..." oninput="updateProgress()"></textarea>
+          </div>
+          <div class="field">
+            <label class="field-label">Quem na empresa deveria ser responsável por construir essa ponte?</label>
+            <span class="field-hint">Cargo, área ou perfil — mesmo que não exista ainda.</span>
+            <textarea rows="3" placeholder="Ex: deveria existir um RevOps Manager ou o papel deveria ser do COO, mas hoje não há responsável claro..." oninput="updateProgress()"></textarea>
+          </div>
+          <div class="field">
+            <label class="field-label">Qual seria o primeiro passo para mudar isso?</label>
+            <span class="field-hint">Uma ação concreta — pequena o suficiente para começar na próxima semana.</span>
+            <textarea rows="3" placeholder="Ex: marcar uma reunião entre marketing e vendas para alinhar o critério de MQL, ou mapear os dados que cada área usa e onde estão..." oninput="updateProgress()"></textarea>
+          </div>
+        </div>
+
+        <div class="divider" style="border-color:rgba(255,255,255,.1)"></div>
+
+        <div class="field">
+          <label class="field-label">Insight da aula — o que você vai levar para a sua empresa?</label>
+          <span class="field-hint">Escreva em 2–3 linhas o principal aprendizado desta análise para a sua realidade.</span>
+          <textarea rows="3" placeholder="Escreva aqui..." oninput="updateProgress()"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SAVE -->
+  <div class="save-wrap">
+    <button class="btn-save" onclick="salvar()">Salvar minha análise</button>
+    <button class="btn-print" onclick="window.print()">Imprimir / Salvar como PDF</button>
+    <p class="save-note">O arquivo será baixado em formato de texto.<br>Guarde para consultar na sua empresa.</p>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DADOS DOS MECANISMOS ─────────────────────────────────────────────────────
+const revopsMecs = [
+  { nome: "Funil de receita unificado", desc: "Marketing, vendas e CS operam com as mesmas etapas, critérios e dados" },
+  { nome: "Definição conjunta de ICP e MQL", desc: "Os times concordam sobre quem é o cliente ideal e o que qualifica um lead" },
+  { nome: "SLA entre marketing e vendas", desc: "Existe um acordo formal sobre o que cada time entrega e em quanto tempo" },
+  { nome: "SLA entre vendas e CS", desc: "O contexto da venda é transferido formalmente para o CS no fechamento" },
+  { nome: "Cadência de revisão de pipeline", desc: "Reunião periódica com dados integrados para revisar o funil e antecipar desvios" },
+  { nome: "Métricas de leading indicators", desc: "A empresa acompanha sinais antecipados, não só os resultados do mês" },
+  { nome: "Dashboard único de receita", desc: "Existe uma visão integrada do funil acessível a todos os times" },
+];
+
+const sopMecs = [
+  { nome: "Ciclo mensal de planejamento integrado", desc: "Processo estruturado que alinha demanda, capacidade e financeiro todo mês" },
+  { nome: "Revisão de demanda com dados históricos", desc: "O forecast é construído com dados reais, não só intuição do time comercial" },
+  { nome: "Alinhamento entre forecast e capacidade operacional", desc: "O que vendas promete ao mercado é validado pela capacidade de entrega" },
+  { nome: "Simulação de cenários", desc: "A empresa testa o que acontece se a demanda crescer ou cair além do previsto" },
+  { nome: "Plano financeiro integrado ao S&OP", desc: "O budget é construído a partir dos dados de demanda e capacidade, não de cima para baixo" },
+  { nome: "Responsável definido pelo processo", desc: "Existe uma pessoa ou área que coordena e garante a cadência do S&OP" },
+];
+
+// ── RENDERIZAR TABELAS ───────────────────────────────────────────────────────
+function renderTabela(mecs, tbodyId, prefix) {
+  const tbody = document.getElementById(tbodyId);
+  mecs.forEach((m, i) => {
+    const id = `${prefix}_${i}`;
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>
+        <div class="mec-name">${m.nome}</div>
+        <div class="mec-desc">${m.desc}</div>
+      </td>
+      <td>
+        <div class="radio-group">
+          <input type="radio" name="${id}" id="${id}_ok" value="ok" class="radio-opt ok" onchange="updateProgress()">
+          <label for="${id}_ok" class="radio-lbl" style="background:var(--ok-pale);color:var(--ok)">✓</label>
+        </div>
+      </td>
+      <td>
+        <div class="radio-group">
+          <input type="radio" name="${id}" id="${id}_w" value="warn" class="radio-opt warn" onchange="updateProgress()">
+          <label for="${id}_w" class="radio-lbl" style="background:var(--warn-pale);color:var(--warn)">⚡</label>
+        </div>
+      </td>
+      <td>
+        <div class="radio-group">
+          <input type="radio" name="${id}" id="${id}_bad" value="bad" class="radio-opt bad" onchange="updateProgress()">
+          <label for="${id}_bad" class="radio-lbl" style="background:var(--danger-pale);color:var(--danger)">✗</label>
+        </div>
+      </td>
+      <td>
+        <input type="text" placeholder="Detalhe..." oninput="updateProgress()" style="font-size:12px">
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+renderTabela(revopsMecs, 'revops-tbody', 'rv');
+renderTabela(sopMecs,    'sop-tbody',    'sp');
+
+// ── PROGRESSO ────────────────────────────────────────────────────────────────
+function updateProgress() {
+  const allInputs = document.querySelectorAll('textarea, input[type="text"]');
+  const radios    = document.querySelectorAll('input[type="radio"]:checked');
+  let filled = 0, total = 0;
+  allInputs.forEach(el => {
+    total++;
+    if (el.value.trim().length > 3) filled++;
+  });
+  const totalRadioGroups = revopsMecs.length + sopMecs.length;
+  total += totalRadioGroups;
+  filled += radios.length;
+  const pct = Math.min(100, Math.round(filled / total * 100));
+  document.getElementById('prog').style.width = pct + '%';
+}
+
+// ── SALVAR ───────────────────────────────────────────────────────────────────
+function salvar() {
+  const linhas = [];
+  linhas.push('A PONTE ENTRE ESTRATÉGIA E OPERAÇÃO');
+  linhas.push('Ferramenta de Análise · RevOps & S&OP · MBA Inteligência de Mercado · Datawise');
+  linhas.push('='.repeat(60));
+  linhas.push('');
+
+  // Bloco 1
+  linhas.push('BLOCO 1 — O QUE VEM DO PLANEJAMENTO ESTRATÉGICO');
+  linhas.push('-'.repeat(50));
+  const labels1 = ['Para onde a empresa quer crescer', 'Qual é o cliente ideal (ICP)', 'Qual é a meta de receita', 'Como a empresa compete', 'O que você NÃO soube responder'];
+  document.querySelectorAll('#bloco1 textarea, .card-body textarea').forEach((ta, i) => {
+    // fallback
+  });
+  // Coleta todas as textareas em ordem
+  const tas = document.querySelectorAll('textarea');
+  const b1Labels = ['Para onde a empresa quer crescer', 'Qual é o cliente ideal (ICP)', 'Qual é a meta de receita', 'Como a empresa compete', 'O que você NÃO soube responder'];
+  tas.forEach((ta, i) => {
+    if (i < 5) {
+      linhas.push(`${b1Labels[i] || 'Campo ' + (i+1)}:`);
+      linhas.push(ta.value.trim() || '(não preenchido)');
+      linhas.push('');
+    }
+  });
+
+  // Bloco 2 — RevOps
+  linhas.push('BLOCO 2 — MECANISMOS DE REVOPS');
+  linhas.push('-'.repeat(50));
+  revopsMecs.forEach((m, i) => {
+    const checked = document.querySelector(`input[name="rv_${i}"]:checked`);
+    const obs = document.querySelectorAll('#revops-tbody input[type="text"]')[i];
+    const status = checked ? (checked.value === 'ok' ? '✓ Funciona' : checked.value === 'warn' ? '⚡ Informal' : '✗ Ausente') : '— Não avaliado';
+    linhas.push(`${m.nome}: ${status}`);
+    if (obs && obs.value.trim()) linhas.push(`  → ${obs.value.trim()}`);
+  });
+  linhas.push('');
+
+  // Bloco 2 — S&OP
+  linhas.push('BLOCO 2 — MECANISMOS DE S&OP');
+  linhas.push('-'.repeat(50));
+  sopMecs.forEach((m, i) => {
+    const checked = document.querySelector(`input[name="sp_${i}"]:checked`);
+    const obs = document.querySelectorAll('#sop-tbody input[type="text"]')[i];
+    const status = checked ? (checked.value === 'ok' ? '✓ Funciona' : checked.value === 'warn' ? '⚡ Informal' : '✗ Ausente') : '— Não avaliado';
+    linhas.push(`${m.nome}: ${status}`);
+    if (obs && obs.value.trim()) linhas.push(`  → ${obs.value.trim()}`);
+  });
+  linhas.push('');
+
+  // Bloco 3
+  linhas.push('BLOCO 3 — O MAIOR GAP');
+  linhas.push('-'.repeat(50));
+  const b3Labels = ['Mecanismo mais ausente', 'Impacto na receita', 'Quem deveria ser responsável', 'Primeiro passo para mudar', 'Insight da aula'];
+  tas.forEach((ta, i) => {
+    if (i >= 5) {
+      const lbl = b3Labels[i - 5] || 'Campo';
+      linhas.push(`${lbl}:`);
+      linhas.push(ta.value.trim() || '(não preenchido)');
+      linhas.push('');
+    }
+  });
+
+  linhas.push('='.repeat(60));
+  linhas.push(`Gerado em: ${new Date().toLocaleString('pt-BR')}`);
+  linhas.push('Datawise · Inteligência de Dados · MBA RevOps/S&OP');
+
+  const blob = new Blob([linhas.join('\n')], { type: 'text/plain;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `ponte_estrategia_operacao_${new Date().toISOString().slice(0,10)}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+
+  showToast('✓ Análise salva com sucesso!');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
